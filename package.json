@@ -1,0 +1,36 @@
+{
+  "name": "rpscript-api-file",
+  "version": "0.1.0",
+  "description": "RPScript API for file read write",
+  "keywords": [
+    "api",
+    "rpa",
+    "rpscript",
+    "filesystem"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "license": "Apache-2.0",
+  "author": "James Chong",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wei3hua2/rpscript-api-file.git"
+  },
+  "scripts": {
+    "watch": "tsc -w",
+    "build": "tsc",
+    "test": "mocha -r ts-node/register test/**.ts",
+    "publish": "tsc && npm publish"
+  },
+  "dependencies": {
+    "rpscript-interface": "^0.2.4"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/node": "^10.5.0",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "ts-node": "^6.2.0",
+    "typescript": "^2.8.3"
+  }
+}
