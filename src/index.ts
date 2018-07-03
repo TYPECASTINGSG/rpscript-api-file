@@ -7,7 +7,7 @@ import fs from 'fs';
 @RpsModule("file")
 export default class RpsFile {
 
-  @rpsAction({defaultName:'read'})
+  @rpsAction({verbName:'read'})
   read(ctx:RpsContext, opts:{}, filepath:string) : Promise<string>{
     return new Promise((resolve, reject) => {
       fs.readFile(filepath,'utf8',(err,data) =>
@@ -18,7 +18,7 @@ export default class RpsFile {
     });
   }
 
-  @rpsAction({defaultName:'append'})
+  @rpsAction({verbName:'append'})
   append(ctx:RpsContext, opts:{}, filename:string, content:string) : Promise<void>{
     return new Promise((resolve, reject) => {
       fs.appendFile(filename,content,'utf8',(err) =>
@@ -29,7 +29,7 @@ export default class RpsFile {
     });
   }
 
-  @rpsAction({defaultName:'write'})
+  @rpsAction({verbName:'write'})
   write (ctx:RpsContext, opts:{}, filename:string, content?:string) : Promise<void> {
     if(!content) content = '';
   
@@ -41,7 +41,7 @@ export default class RpsFile {
     });
   }
 
-  @rpsAction({defaultName:'delete'})
+  @rpsAction({verbName:'delete'})
   delete (ctx:RpsContext, opts:{}, filename:string) : Promise<void> {
 
     return new Promise((resolve, reject) => {
@@ -53,12 +53,12 @@ export default class RpsFile {
     });
   }
 
-  @rpsAction({defaultName:'exists'})
+  @rpsAction({verbName:'exists'})
   exists (ctx:RpsContext, opts:{}, filepath:string) : Promise<boolean> {
     return Promise.resolve(fs.existsSync(filepath));
   }
 
-  @rpsAction({defaultName:'rename'})
+  @rpsAction({verbName:'rename'})
   rename (ctx:RpsContext, opts:{}, oldpath:string, newpath:string) : Promise<void> {
     return new Promise((resolve, reject) => {
       fs.rename(oldpath,newpath,(err) =>
@@ -69,7 +69,7 @@ export default class RpsFile {
     });
   }
   
-  @rpsAction({defaultName:'stat'})
+  @rpsAction({verbName:'stat'})
   stat (ctx:RpsContext, opts:{}, filepath:string) : Promise<fs.Stats> {
     return new Promise((resolve, reject) => {
       fs.stat(filepath,(err, stats) =>
