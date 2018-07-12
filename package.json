@@ -23,7 +23,7 @@
     "publish": "tsc && npm publish"
   },
   "dependencies": {
-    "rpscript-interface": "^0.5.3"
+    "rpscript-interface": "^0.5.8"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",
