@@ -1,9 +1,9 @@
-/**
- * @module File
- */
 import {RpsContext,RpsModule,rpsAction} from 'rpscript-interface';
 import fs from 'fs';
 
+/** File Module
+ * @namespace File
+*/
 @RpsModule("file")
 export default class RpsFile {
 
