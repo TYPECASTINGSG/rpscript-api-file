@@ -13,13 +13,15 @@ export default class RpsFile {
       fs.readFile(filepath,'utf8',(err,data) =>
       {
         if(err) reject(err);
-        else resolve(data);
+        else resolve( this.parseReadContent(data) );
       });
     });
   }
 
   @rpsAction({verbName:'append'})
-  append(ctx:RpsContext, opts:{}, filename:string, content:string) : Promise<void>{
+  append(ctx:RpsContext, opts:{}, filename:string, content:any) : Promise<void>{
+    content = this.parseWriteContent(content);
+
     return new Promise((resolve, reject) => {
       fs.appendFile(filename,content,'utf8',(err) =>
       {
@@ -30,8 +32,8 @@ export default class RpsFile {
   }
 
   @rpsAction({verbName:'write'})
-  write (ctx:RpsContext, opts:{}, filename:string, content?:string) : Promise<void> {
-    if(!content) content = '';
+  write (ctx:RpsContext, opts:{}, filename:string, content?:any) : Promise<void> {
+    content = this.parseWriteContent(content);
   
     return new Promise((resolve, reject) => {
       fs.writeFile(filename,content,'utf8',(err) => {
@@ -78,6 +80,24 @@ export default class RpsFile {
         else resolve(stats);
       });
     });
+  }
+
+  parseWriteContent (content:any) :string{
+    if(typeof content === 'string') return content;
+    else if(typeof content === 'undefined') return '';
+    else if(typeof content === 'function') return content;
+    else if(typeof content === 'object') return JSON.stringify(content,null,2);
+    else return content;
+  }
+
+  parseReadContent (content:string) :any{
+    let result;
+    try{
+      result = JSON.parse(content);
+    }catch(err){
+      result = content;
+    }
+    return result;
   }
 }
 
