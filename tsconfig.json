@@ -16,6 +16,7 @@
     "declaration": true,
     "strict": false,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "experimentalDecorators":true
   }
 }
