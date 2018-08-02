@@ -1,4 +1,4 @@
-import {RpsContext,RpsModule,rpsAction} from 'rpscript-interface';
+import {RpsContext,RpsModule,rpsAction,R} from 'rpscript-interface';
 import fs from 'fs';
 
 /** Module for parsing file management
@@ -13,26 +13,16 @@ export default class RpsFile {
  * @function read-file
  * @memberof File
  * @param {string} filepath path to be read from
- * @return {string|Object|Array}
- * @description
- * If the file is in object or array format, it will be casted. Else it will be in string format
- * 
- * @example
+ * @return {string}
  * read-file 'file.txt'
- * ;Print output to the console
- * console-log $RESULT
  * 
+ * @returns {string}
+ * @summary read-file :: String → String
  * 
 */
   @rpsAction({verbName:'read-file'})
-  read(ctx:RpsContext, opts:{}, filepath:string) : Promise<string>{
-    return new Promise((resolve, reject) => {
-      fs.readFile(filepath,'utf8',(err,data) =>
-      {
-        if(err) reject(err);
-        else resolve( this.parseReadContent(data) );
-      });
-    });
+  async read(ctx:RpsContext, opts:{}, filepath:string) : Promise<string>{
+      return this.parseReadContent(fs.readFileSync(filepath,'utf8'));
   }
 
 /**
@@ -42,24 +32,19 @@ export default class RpsFile {
  * @param {string} content The content to append to
  * @return {void}
  * 
- * @example
- * read-file 'file.txt'
- * ;Print output to the console
- * console-log $RESULT
- * 
+ * @summary read-file :: String → String → void
  * 
 */
   @rpsAction({verbName:'append-to-file'})
-  append(ctx:RpsContext, opts:{}, filepath:string, content:any) : Promise<void>{
-    content = this.parseWriteContent(content);
-
-    return new Promise((resolve, reject) => {
-      fs.appendFile(filepath,content,'utf8',(err) =>
-      {
-        if(err) reject(err);
-        else resolve();
-      });
+  async append(ctx:RpsContext, opts:{}, ...params:any[]) : Promise<void|Function>{
+    var that = this;
+    // filepath?:string, content?:any
+    let fn = R.curry(function (filepath,content) {
+      content = that.parseWriteContent(content);
+      fs.appendFileSync(filepath,content,'utf8');
     });
+
+    return R.apply(fn,params);
   }
 
   /**
@@ -69,23 +54,20 @@ export default class RpsFile {
  * @param {string} content The content to append to
  * @return {void}
  * 
- * @example
- * read-file 'file.txt'
- * ;Print output to the console
- * console-log $RESULT
- * 
+ * @summary write-file :: String → String → void
  * 
 */
   @rpsAction({verbName:'write-file'})
-  write (ctx:RpsContext, opts:{}, filepath:string, content?:any) : Promise<void> {
+  async write (ctx:RpsContext, opts:{},filepath:string, content?:any) : Promise<void> {
+    // var that = this;
+    // let fn = R.curry(function(filepath,content){
+    //   content = that.parseWriteContent(content);
+    //   fs.writeFileSync(filepath,content,'utf8');
+    // });
+    // return R.apply(fn,params);
+
     content = this.parseWriteContent(content);
-  
-    return new Promise((resolve, reject) => {
-      fs.writeFile(filepath,content,'utf8',(err) => {
-        if(err) reject(err);
-        else resolve();
-      });
-    });
+    fs.writeFileSync(filepath,content,'utf8');
   }
 
 /**
@@ -94,23 +76,12 @@ export default class RpsFile {
  * @param {string} filepath path to be read from
  * @return {void}
  * 
- * @example
- * delete-file 'file.txt'
- * ;Print out false
- * console-log file-exists 'file.txt'
- * 
+ * @summary delete-file :: String → void
  * 
 */
   @rpsAction({verbName:'delete-file'})
-  delete (ctx:RpsContext, opts:{}, filename:string) : Promise<void> {
-
-    return new Promise((resolve, reject) => {
-      fs.unlink(filename,(err) =>
-      {
-        if(err) reject(err);
-        else resolve();
-      });
-    });
+  async delete (ctx:RpsContext, opts:{}, filename:string) : Promise<void> {
+    return fs.unlinkSync(filename);
   }
 
   /**
@@ -127,11 +98,12 @@ export default class RpsFile {
  * ;Print out false
  * console-log file-exists 'file.txt'
  * 
+ * @summary file-exists :: String → Boolean
  * 
 */
   @rpsAction({verbName:'file-exists'})
-  exists (ctx:RpsContext, opts:{}, filepath:string) : Promise<boolean> {
-    return Promise.resolve(fs.existsSync(filepath));
+  async exists (ctx:RpsContext, opts:{}, filepath:string) : Promise<boolean> {
+    return fs.existsSync(filepath);
   }
 
 /**
@@ -145,19 +117,18 @@ export default class RpsFile {
  * 
  * @example
  * rename-file 'file.txt' 'name.txt'
- * console-log file-exists 'name.txt'
+ * log file-exists 'name.txt'
+ * 
+ * @summary delete-file :: String → String → void
  * 
  * 
 */
   @rpsAction({verbName:'rename-file'})
-  rename (ctx:RpsContext, opts:{}, oldpath:string, newpath:string) : Promise<void> {
-    return new Promise((resolve, reject) => {
-      fs.rename(oldpath,newpath,(err) =>
-      {
-        if(err) reject(err);
-        else resolve();
-      });
-    });
+  async rename (ctx:RpsContext, opts:{}, oldpath:string, newpath?:string) : Promise<void|Function> {
+      if(newpath)
+        return fs.renameSync(oldpath,newpath);
+      else
+        return function(newpath){fs.renameSync(oldpath,newpath);}
   }
   
 /**
@@ -172,17 +143,12 @@ export default class RpsFile {
  * file-stat 'file.txt'
  * console-log $RESULT
  * 
+ * @summary file-stat :: String → fs.Stats
  * 
 */
   @rpsAction({verbName:'file-stat'})
-  stat (ctx:RpsContext, opts:{}, filepath:string) : Promise<fs.Stats> {
-    return new Promise((resolve, reject) => {
-      fs.stat(filepath,(err, stats) =>
-      {
-        if(err) reject(err);
-        else resolve(stats);
-      });
-    });
+  async stat (ctx:RpsContext, opts:{}, filepath:string) : Promise<fs.Stats> {
+      return fs.statSync(filepath);
   }
 
   parseWriteContent (content:any) :string{

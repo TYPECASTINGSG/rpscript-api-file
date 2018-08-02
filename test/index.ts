@@ -12,7 +12,8 @@ m.describe('File', () => {
     let pathDirectory = "./test/tempfilename.txt";
     let content = "Hello";
 
-    await file.write(ctx,{},pathDirectory);
+    let o = await file.write(ctx,{},pathDirectory);
+    
     let exist = await file.exists(ctx,{},pathDirectory);
 
     expect(exist).to.be.true; //file exist
