@@ -12,7 +12,8 @@ m.describe('File', () => {
     let pathDirectory = "./test/tempfilename.txt";
     let content = "Hello";
 
-    let o = await file.write(ctx,{},pathDirectory);
+    let o:any = await file.write(ctx,{},pathDirectory);
+    o('');
     
     let exist = await file.exists(ctx,{},pathDirectory);
 
@@ -35,7 +36,7 @@ m.describe('File', () => {
     let pathDirectory = "./test/tempfilename1.txt";
     let content = {a:1,b:'bb',c:{d:2,e:'ee'}};
 
-    await file.write(ctx,{},pathDirectory);
+    await file.write(ctx,{},pathDirectory,'');
     let exist = await file.exists(ctx,{},pathDirectory);
 
     expect(exist).to.be.true; //file exist
@@ -57,7 +58,7 @@ m.describe('File', () => {
     let pathDirectory = "./test/tempfilename2.txt";
     let content = ['a','b',1,'d'];
     
-    await file.write(ctx,{},pathDirectory);
+    await file.write(ctx,{},pathDirectory,'');
     let exist = await file.exists(ctx,{},pathDirectory);
 
     expect(exist).to.be.true; //file exist
@@ -79,7 +80,7 @@ m.describe('File', () => {
     let pathDirectory = "./test/tempfilename3.txt";
     let content = [{a:1,b:'bb',c:{d:2,e:'ee'}},{a:5,b:'ww',c:{d:3,e:'ff'}}];
     
-    await file.write(ctx,{},pathDirectory);
+    await file.write(ctx,{},pathDirectory,'');
     let exist = await file.exists(ctx,{},pathDirectory);
 
     expect(exist).to.be.true; //file exist
@@ -101,7 +102,7 @@ m.describe('File', () => {
     let pathDirectory = "./test/tempfilename4.txt";
     let content = function(){console.log('hello');};
     
-    await file.write(ctx,{},pathDirectory);
+    await file.write(ctx,{},pathDirectory,'');
     let exist = await file.exists(ctx,{},pathDirectory);
 
     expect(exist).to.be.true; //file exist

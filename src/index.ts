@@ -21,8 +21,11 @@ export default class RpsFile {
  * 
 */
   @rpsAction({verbName:'read-file'})
-  async read(ctx:RpsContext, opts:{}, filepath:string) : Promise<string>{
+  async read(ctx:RpsContext, opts:{}, filepath?:string) : Promise<string|Function>{
+    if(filepath)
       return this.parseReadContent(fs.readFileSync(filepath,'utf8'));
+    else  
+      return function(filepath){return this.parseReadContent(fs.readFileSync(filepath,'utf8'));}
   }
 
 /**
@@ -58,16 +61,15 @@ export default class RpsFile {
  * 
 */
   @rpsAction({verbName:'write-file'})
-  async write (ctx:RpsContext, opts:{},filepath:string, content?:any) : Promise<void> {
-    // var that = this;
-    // let fn = R.curry(function(filepath,content){
-    //   content = that.parseWriteContent(content);
-    //   fs.writeFileSync(filepath,content,'utf8');
-    // });
-    // return R.apply(fn,params);
+  async write (ctx:RpsContext, opts:{},...params:any[]) : Promise<void|Function> {
+    // filepath:string, content?:any
+    var that = this;
+    let fn = R.curry(function(filepath,content){
+      content = that.parseWriteContent(content);
+      fs.writeFileSync(filepath,content,'utf8');
+    });
 
-    content = this.parseWriteContent(content);
-    fs.writeFileSync(filepath,content,'utf8');
+    return R.apply(fn,params);
   }
 
 /**
@@ -80,8 +82,9 @@ export default class RpsFile {
  * 
 */
   @rpsAction({verbName:'delete-file'})
-  async delete (ctx:RpsContext, opts:{}, filename:string) : Promise<void> {
-    return fs.unlinkSync(filename);
+  async delete (ctx:RpsContext, opts:{}, filename?:string) : Promise<void|Function> {
+    if(filename) return fs.unlinkSync(filename);
+    else return function(fn){ fs.unlinkSync(fn); }
   }
 
   /**
@@ -91,7 +94,7 @@ export default class RpsFile {
  * @return {boolean}
  * 
  * @example
- * write-file 'file.txt'
+ * write-file 'file.txt' ''
  * ;Print out true
  * console-log file-exists 'file.txt'
  * delete-file 'file.txt'
@@ -102,8 +105,9 @@ export default class RpsFile {
  * 
 */
   @rpsAction({verbName:'file-exists'})
-  async exists (ctx:RpsContext, opts:{}, filepath:string) : Promise<boolean> {
-    return fs.existsSync(filepath);
+  async exists (ctx:RpsContext, opts:{}, filepath:string) : Promise<boolean|Function> {
+    if(filepath) return fs.existsSync(filepath);
+    else return function(fp){ return fs.existsSync(fp); }
   }
 
 /**
@@ -147,8 +151,9 @@ export default class RpsFile {
  * 
 */
   @rpsAction({verbName:'file-stat'})
-  async stat (ctx:RpsContext, opts:{}, filepath:string) : Promise<fs.Stats> {
-      return fs.statSync(filepath);
+  async stat (ctx:RpsContext, opts:{}, filepath:string) : Promise<fs.Stats|Function> {
+    if(filepath) return fs.statSync(filepath);
+    else return function(fp){ return fs.statSync(fp); }
   }
 
   parseWriteContent (content:any) :string{
