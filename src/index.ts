@@ -35,13 +35,12 @@ export default class RpsFile {
  * @param {string} content The content to append to
  * @return {void}
  * 
- * @summary read-file :: String → String → void
+ * @summary append-to-file :: String → String → void
  * 
 */
   @rpsAction({verbName:'append-to-file'})
   async append(ctx:RpsContext, opts:{}, ...params:any[]) : Promise<void|Function>{
     var that = this;
-    // filepath?:string, content?:any
     let fn = R.curry(function (filepath,content) {
       content = that.parseWriteContent(content);
       fs.appendFileSync(filepath,content,'utf8');
@@ -54,7 +53,7 @@ export default class RpsFile {
  * @function write-file
  * @memberof File
  * @param {string} filepath path to be read from
- * @param {string} content The content to append to
+ * @param {string} content The content to write
  * @return {void}
  * 
  * @summary write-file :: String → String → void
@@ -96,10 +95,10 @@ export default class RpsFile {
  * @example
  * write-file 'file.txt' ''
  * ;Print out true
- * console-log file-exists 'file.txt'
+ * log file-exists 'file.txt'
  * delete-file 'file.txt'
  * ;Print out false
- * console-log file-exists 'file.txt'
+ * log file-exists 'file.txt'
  * 
  * @summary file-exists :: String → Boolean
  * 
@@ -123,7 +122,7 @@ export default class RpsFile {
  * rename-file 'file.txt' 'name.txt'
  * log file-exists 'name.txt'
  * 
- * @summary delete-file :: String → String → void
+ * @summary rename-file :: String → String → void
  * 
  * 
 */
@@ -145,7 +144,7 @@ export default class RpsFile {
  * 
  * @example
  * file-stat 'file.txt'
- * console-log $RESULT
+ * log $RESULT
  * 
  * @summary file-stat :: String → fs.Stats
  * 
